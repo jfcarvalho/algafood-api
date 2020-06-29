@@ -1,13 +1,13 @@
 package com.algaworks.algafood.repository.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.algaworks.algafood.modelo.Restaurante;
 import com.algaworks.algafood.repository.RestauranteRepository;
 
@@ -30,15 +30,18 @@ public class RestauranteRepositoryImpl implements RestauranteRepository {
 	
 	@Override
 	@Transactional
-	public Restaurante adicionar(Restaurante cozinha) {
-		return manager.merge(cozinha);
+	public Restaurante adicionar(Restaurante restaurante) {
+		return manager.merge(restaurante);
 	}
 	
 	@Override
 	@Transactional
-	public void remove(Restaurante cozinha) {
-		cozinha = buscar(cozinha.getId());
-		manager.remove(cozinha);
+	public void remove(Restaurante restaurante) {
+		restaurante = buscar(restaurante.getId());
+		Optional<Restaurante> retorno = Optional.ofNullable(restaurante);
+		if(retorno.isPresent()) {
+			manager.remove(restaurante);
+		}
 	}
 
 }

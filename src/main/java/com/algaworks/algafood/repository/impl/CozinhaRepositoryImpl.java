@@ -1,6 +1,7 @@
 package com.algaworks.algafood.repository.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,6 +38,9 @@ public class CozinhaRepositoryImpl implements CozinhaRepository {
 	@Transactional
 	public void remove(Cozinha cozinha) {
 		cozinha = buscar(cozinha.getId());
-		manager.remove(cozinha);
+		Optional<Cozinha> retorno = Optional.ofNullable(cozinha);
+		if(retorno.isPresent()) {
+			manager.remove(cozinha);
+		}
 	}
 }
