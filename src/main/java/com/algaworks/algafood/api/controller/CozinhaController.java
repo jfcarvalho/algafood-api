@@ -1,6 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -32,15 +33,12 @@ public class CozinhaController {
 	@GetMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") Long id) {
 		Cozinha cozinha = cozinhaRepository.buscar(id);
-		//return ResponseEntity.status(HttpStatus.OK).body(cozinha);
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.LOCATION, "http://localhost:8081/cozinhas");
+		Optional<Cozinha> retorno = Optional.ofNullable(cozinha);
+		if(retorno.isPresent()) {
+			return ResponseEntity.ok(cozinha);
+		}
 		
-		return ResponseEntity
-				.status(HttpStatus.FOUND)
-				.headers(headers)
-				.build();
-				
+		return ResponseEntity.notFound().build();				
 	}
 
 	@GetMapping(value="/cozinhasWrapper", produces = MediaType.APPLICATION_XML_VALUE)
