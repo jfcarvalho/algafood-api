@@ -3,11 +3,13 @@ package com.algaworks.algafood.api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.modelo.CozinhasXMLWrapper;
 import com.algaworks.algafood.modelo.Cozinha;
 import com.algaworks.algafood.repository.CozinhaRepository;
 
@@ -29,4 +31,8 @@ public class CozinhaController {
 		return cozinhaRepository.buscar(id);
 	}
 
+	@GetMapping(value="/cozinhasWrapper", produces = MediaType.APPLICATION_XML_VALUE)
+	public CozinhasXMLWrapper listarXml() {
+		return new CozinhasXMLWrapper(cozinhaRepository.listar());
+	}
 }
