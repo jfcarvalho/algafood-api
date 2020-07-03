@@ -9,31 +9,34 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.algaworks.algafood.modelo.Estado;
-import com.algaworks.algafood.repository.EstadoRepository;
 
 @Component
-public class EstadoRepositoyImpl implements EstadoRepository {
+public class EstadoRepositoyImpl  {
 	@PersistenceContext
 	private EntityManager manager;
 	
-	@Override
+	@Deprecated
+	//@Override
 	public List<Estado> listar() {
 		return manager.createQuery("from Estado", Estado.class)
 			.getResultList();	
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	public Estado buscar(Long id) {
 		return manager.find(Estado.class, id);
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	@Transactional
 	public Estado adicionar(Estado estado) {
 		return manager.merge(estado);
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	@Transactional
 	public void remove(Estado estado) {
 		estado = buscar(estado.getId());

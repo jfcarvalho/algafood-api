@@ -11,32 +11,35 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.algaworks.algafood.modelo.Cidade;
-import com.algaworks.algafood.repository.CidadeRepository;
 
 @Component
-public class CidadeRepositoryImpl implements CidadeRepository {
+public class CidadeRepositoryImpl  {
 	
 	@PersistenceContext
 	private EntityManager manager;
 	
-	@Override
+	@Deprecated
+	//@Override
 	public List<Cidade> listar() {
 		return manager.createQuery("from Cidade", Cidade.class)
 			.getResultList();	
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	public Cidade buscar(Long id) {
 		return manager.find(Cidade.class, id);
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	@Transactional
 	public Cidade adicionar(Cidade cidade) {
 		return manager.merge(cidade);
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	@Transactional
 	public void remove(Long id) {
 		Cidade cidade = buscar(id);
