@@ -1,26 +1,30 @@
 package com.algaworks.algafood.api.controller;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 
 import com.algaworks.algafood.api.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.service.RestauranteService;
-import com.algaworks.algafood.modelo.Cozinha;
 import com.algaworks.algafood.modelo.Restaurante;
 import com.algaworks.algafood.repository.RestauranteRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/restaurantes")
@@ -70,4 +74,32 @@ public class RestauranteController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	@PatchMapping("/{restauranteId}")
+	public ResponseEntity<?> atualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> restaurante) {
+		Restaurante restauranteAtual = restauranteRepository.buscar(restauranteId);
+		Optional<Restaurante> retorno = Optional.ofNullable(restauranteAtual);
+		if(!retorno.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		merge(restaurante, restauranteAtual);
+		
+		return atualizar(restauranteId, restauranteAtual);
+	}
+	
+	private void merge(Map<String, Object> campos, Restaurante restauranteDestino) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		Restaurante restauranteOrigem = objectMapper.convertValue(campos, Restaurante.class) ;
+		campos.forEach((nomePropriedade, valorPropriedade) -> {
+			Field field = ReflectionUtils.findField(Restaurante.class, nomePropriedade);
+			field.setAccessible(true);
+			Object novoValor = ReflectionUtils.getField(field, restauranteOrigem);
+			ReflectionUtils.setField(field,  restauranteDestino,  novoValor);
+			
+		});
+		
+	}
 }
+
+

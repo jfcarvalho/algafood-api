@@ -8,12 +8,15 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.algaworks.algafood.modelo.Cozinha;
 import com.algaworks.algafood.repository.CozinhaRepository;
 
-@Component
+@Repository
 public class CozinhaRepositoryImpl implements CozinhaRepository {
 	@PersistenceContext
 	private EntityManager manager;
@@ -47,4 +50,14 @@ public class CozinhaRepositoryImpl implements CozinhaRepository {
 			throw new EmptyResultDataAccessException(1);
 		}
 	}
+	
+	@GetMapping("/cozinhas/por-nome")
+	@Override
+	public List<Cozinha> consultarPorNomeSemSJPA(@RequestParam("nome") String nome) {
+		return manager.createQuery("from Cozinha where nome like :nome", Cozinha.class)
+				.setParameter("%" + "nome" + "%", nome)
+				.getResultList();
+	}
+	
+	
 }
