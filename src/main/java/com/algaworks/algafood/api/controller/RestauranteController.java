@@ -37,15 +37,14 @@ public class RestauranteController {
 	
 	@GetMapping
 	public List<Restaurante> listar() {
-		return restauranteRepository.listar();
+		return restauranteRepository.findAll();
 	}
 	
 	@GetMapping("/{restauranteId}")
 	public ResponseEntity<Restaurante> buscar(@PathVariable("restauranteId") Long id) {
-		Restaurante restaurante = restauranteRepository.buscar(id);
-		Optional<Restaurante> retorno = Optional.ofNullable(restaurante);
-		if(retorno.isPresent()) {
-			return ResponseEntity.ok(restaurante);
+		Optional<Restaurante> restaurante = restauranteRepository.findById(id);
+		if(restaurante.isPresent()) {
+			return ResponseEntity.ok(restaurante.get());
 		}
 		
 		return ResponseEntity.notFound().build();				
@@ -64,12 +63,11 @@ public class RestauranteController {
 	@PutMapping("/{cozinhaId}")
 	public ResponseEntity<Restaurante> atualizar (@PathVariable Long restauranteId, 
 			@RequestBody Restaurante restaurante) {
-		Restaurante restauranteAtual = restauranteRepository.buscar(restauranteId);
-		Optional<Restaurante> retorno = Optional.ofNullable(restauranteAtual);
-		if(retorno.isPresent()) {
-			BeanUtils.copyProperties(restaurante, restauranteAtual, "id");
-			restauranteService.salvar(restauranteAtual);
-			return ResponseEntity.ok(restauranteAtual);
+		Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restauranteId);
+		if(restauranteAtual.isPresent()) {
+			BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id");
+			restauranteService.salvar(restauranteAtual.get());
+			return ResponseEntity.ok(restauranteAtual.get());
 
 		}
 		return ResponseEntity.notFound().build();
@@ -77,15 +75,14 @@ public class RestauranteController {
 	
 	@PatchMapping("/{restauranteId}")
 	public ResponseEntity<?> atualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> restaurante) {
-		Restaurante restauranteAtual = restauranteRepository.buscar(restauranteId);
-		Optional<Restaurante> retorno = Optional.ofNullable(restauranteAtual);
-		if(!retorno.isPresent()) {
+		Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restauranteId);
+		if(!restauranteAtual.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
 		
-		merge(restaurante, restauranteAtual);
+		merge(restaurante, restauranteAtual.get());
 		
-		return atualizar(restauranteId, restauranteAtual);
+		return atualizar(restauranteId, restauranteAtual.get());
 	}
 	
 	private void merge(Map<String, Object> campos, Restaurante restauranteDestino) {

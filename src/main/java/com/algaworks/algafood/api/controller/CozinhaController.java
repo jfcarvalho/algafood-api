@@ -38,15 +38,15 @@ public class CozinhaController {
 	
 	@GetMapping
 	public List<Cozinha> listar() {
-		return cozinhaRepository.listar();
+		return cozinhaRepository.findAll();
 	}
 	
 	@GetMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") Long id) {
-		Cozinha cozinha = cozinhaRepository.buscar(id);
-		Optional<Cozinha> retorno = Optional.ofNullable(cozinha);
-		if(retorno.isPresent()) {
-			return ResponseEntity.ok(cozinha);
+		Optional<Cozinha> cozinha = cozinhaRepository.findById(id);
+
+		if(cozinha.isPresent()) {
+			return ResponseEntity.ok(cozinha.get());
 		}
 		
 		return ResponseEntity.notFound().build();				
@@ -54,7 +54,7 @@ public class CozinhaController {
 
 	@GetMapping(value="/cozinhasWrapper", produces = MediaType.APPLICATION_XML_VALUE)
 	public CozinhasXMLWrapper listarXml() {
-		return new CozinhasXMLWrapper(cozinhaRepository.listar());
+		return new CozinhasXMLWrapper(cozinhaRepository.findAll());
 	}
 	
 	@PostMapping
@@ -66,12 +66,11 @@ public class CozinhaController {
 	@PutMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> atualizar (@PathVariable Long cozinhaId, 
 			@RequestBody Cozinha cozinha) {
-		Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
-		Optional<Cozinha> retorno = Optional.ofNullable(cozinhaAtual);
-		if(retorno.isPresent()) {
-			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			cozinhaService.salvar(cozinhaAtual);
-			return ResponseEntity.ok(cozinhaAtual);
+		Optional<Cozinha> cozinhaAtual = cozinhaRepository.findById(cozinhaId);
+		if(cozinhaAtual.isPresent()) {
+			BeanUtils.copyProperties(cozinha, cozinhaAtual.get(), "id");
+			cozinhaService.salvar(cozinhaAtual.get());
+			return ResponseEntity.ok(cozinhaAtual.get());
 
 		}
 		return ResponseEntity.notFound().build();

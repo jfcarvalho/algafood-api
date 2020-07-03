@@ -16,29 +16,39 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.algaworks.algafood.modelo.Cozinha;
 import com.algaworks.algafood.repository.CozinhaRepository;
 
-@Repository
-public class CozinhaRepositoryImpl implements CozinhaRepository {
+
+public class CozinhaRepositoryImpl {
 	@PersistenceContext
 	private EntityManager manager;
 	
-	@Override
+	@GetMapping("/cozinhas/por-nome")
+	//@Override
+	public List<Cozinha> consultarPorNomeSemSJPA(@RequestParam("nome") String nome) {
+		return manager.createQuery("from Cozinha where nome like :nome", Cozinha.class)
+				.setParameter("%" + "nome" + "%", nome)
+				.getResultList();
+	}
+	
+	@Deprecated
+	//@Override
 	public List<Cozinha> listar() {
 		return manager.createQuery("from Cozinha", Cozinha.class)
 			.getResultList();	
 	}
-	
-	@Override
+	@Deprecated
+	//@Override
 	public Cozinha buscar(Long id) {
 		return manager.find(Cozinha.class, id);
 	}
-	
-	@Override
+	@Deprecated
+	//@Override
 	@Transactional
 	public Cozinha adicionar(Cozinha cozinha) {
 		return manager.merge(cozinha);
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	@Transactional
 	public void remove(Long id) {
 		Cozinha cozinha = buscar(id);
@@ -51,13 +61,7 @@ public class CozinhaRepositoryImpl implements CozinhaRepository {
 		}
 	}
 	
-	@GetMapping("/cozinhas/por-nome")
-	@Override
-	public List<Cozinha> consultarPorNomeSemSJPA(@RequestParam("nome") String nome) {
-		return manager.createQuery("from Cozinha where nome like :nome", Cozinha.class)
-				.setParameter("%" + "nome" + "%", nome)
-				.getResultList();
-	}
+	
 	
 	
 }

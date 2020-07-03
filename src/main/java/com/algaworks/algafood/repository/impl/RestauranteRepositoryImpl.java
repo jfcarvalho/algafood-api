@@ -9,32 +9,36 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.algaworks.algafood.modelo.Restaurante;
-import com.algaworks.algafood.repository.RestauranteRepository;
+
 
 @Component
-public class RestauranteRepositoryImpl implements RestauranteRepository {
+public class RestauranteRepositoryImpl {
 
 	@PersistenceContext
 	private EntityManager manager;
 	
-	@Override
+	@Deprecated
+	//@Override
 	public List<Restaurante> listar() {
 		return manager.createQuery("from Restaurante", Restaurante.class)
 			.getResultList();	
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	public Restaurante buscar(Long id) {
 		return manager.find(Restaurante.class, id);
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	@Transactional
 	public Restaurante adicionar(Restaurante restaurante) {
 		return manager.merge(restaurante);
 	}
 	
-	@Override
+	@Deprecated
+	//@Override
 	@Transactional
 	public void remove(Restaurante restaurante) {
 		restaurante = buscar(restaurante.getId());
