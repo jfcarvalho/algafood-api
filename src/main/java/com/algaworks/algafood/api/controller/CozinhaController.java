@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +70,7 @@ public class CozinhaController {
 		Optional<Cozinha> retorno = Optional.ofNullable(cozinhaAtual);
 		if(retorno.isPresent()) {
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			cozinhaRepository.adicionar(cozinhaAtual);
+			cozinhaService.salvar(cozinhaAtual);
 			return ResponseEntity.ok(cozinhaAtual);
 
 		}
