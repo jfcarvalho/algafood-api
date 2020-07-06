@@ -1,21 +1,63 @@
 package com.algaworks.algafood.repository.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.algaworks.algafood.modelo.Restaurante;
+import com.algaworks.algafood.repository.RestauranteRepositoryQueries;
 
 
 @Component
-public class RestauranteRepositoryImpl {
+public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
 
 	@PersistenceContext
 	private EntityManager manager;
+	
+	@Override
+	public List<Restaurante> find(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal)
+	{
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaQuery<Restaurante> criteria = builder.createQuery(Restaurante.class);
+		Root<Restaurante> root = criteria.from(Restaurante.class);
+		Predicate nomePredicate = builder.like(root.get("Nome"), "%"+nome+"%");
+		Predicate taxaInicialPredicate = builder
+				.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial);
+		Predicate taxaFinalPredicate = builder
+				.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal);
+		
+		criteria.where(nomePredicate, taxaInicialPredicate, taxaFinalPredicate);
+		
+		TypedQuery<Restaurante> query = manager.createQuery(criteria);
+		
+		return query.getResultList();
+	}
+	
+	@Deprecated
+	//@Override
+	public List<Restaurante> findOld(String nome,
+			BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) 
+	{
+		var jpql = "from Restaurante where nome like :nome "
+				+ "and taxaFrete between :taxaInicial and :taxaFinal";
+		return manager.createQuery(jpql, Restaurante.class)
+				.setParameter("nome", "%" + nome + "%")
+				.setParameter("taxaInicial", taxaFreteInicial)
+				.setParameter("taxaFinal", taxaFreteFinal)
+				.getResultList();
+				
+	}
 	
 	@Deprecated
 	//@Override
