@@ -1,6 +1,7 @@
 package com.algaworks.algafood.repository.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.algaworks.algafood.modelo.Restaurante;
 import com.algaworks.algafood.repository.RestauranteRepositoryQueries;
@@ -31,13 +33,20 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
 		CriteriaBuilder builder = manager.getCriteriaBuilder();
 		CriteriaQuery<Restaurante> criteria = builder.createQuery(Restaurante.class);
 		Root<Restaurante> root = criteria.from(Restaurante.class);
-		Predicate nomePredicate = builder.like(root.get("Nome"), "%"+nome+"%");
-		Predicate taxaInicialPredicate = builder
-				.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial);
-		Predicate taxaFinalPredicate = builder
-				.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal);
+		var predicates = new ArrayList<Predicate>();
+		if(StringUtils.hasText(nome)) {
+			predicates.add(builder.like(root.get("Nome"), "%"+nome+"%"));
+		}
+		if(taxaFreteInicial != null) {
+			predicates.add(builder.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial));
+		}
+		if(taxaFreteFinal != null) {
+			predicates.add(builder.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal));
+		}
 		
-		criteria.where(nomePredicate, taxaInicialPredicate, taxaFinalPredicate);
+		
+		
+		criteria.where(predicates.toArray(new Predicate[0]));
 		
 		TypedQuery<Restaurante> query = manager.createQuery(criteria);
 		
