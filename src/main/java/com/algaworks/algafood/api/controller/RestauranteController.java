@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,7 +53,7 @@ public class RestauranteController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> adicionar(@RequestBody Restaurante restaurante) {
+	public ResponseEntity<?> adicionar(@RequestBody @Valid Restaurante restaurante) {
 		try {
 			restaurante = restauranteService.salvar(restaurante);
 			return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
@@ -62,10 +64,11 @@ public class RestauranteController {
 
 	@PutMapping("/{cozinhaId}")
 	public ResponseEntity<Restaurante> atualizar (@PathVariable Long restauranteId, 
-			@RequestBody Restaurante restaurante) {
+			@RequestBody @Valid Restaurante restaurante) {
 		Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restauranteId);
 		if(restauranteAtual.isPresent()) {
-			BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id");
+			BeanUtils.copyProperties(restaurante, restauranteAtual.get(), 
+					"id", "formasPagamento", "endereco", "dataCadastro");
 			restauranteService.salvar(restauranteAtual.get());
 			return ResponseEntity.ok(restauranteAtual.get());
 

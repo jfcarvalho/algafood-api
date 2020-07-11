@@ -13,6 +13,11 @@ import com.algaworks.algafood.modelo.Restaurante;
 
 public class RestauranteComFreteGratisSpec implements Specification<Restaurante> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Predicate toPredicate(Root<Restaurante> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 		
